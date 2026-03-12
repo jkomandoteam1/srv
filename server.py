@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 
-app = Flask(__name__)
+app = Flask(__name__)  # <- именно это имя подхватывает Gunicorn
 
-# "База данных"
+# Простая "база данных" в памяти для токенов
 TOKENS = {
     "TEST_TOKEN": "PC_001"
 }
@@ -18,6 +18,7 @@ def auth():
     else:
         return jsonify({"status": "denied"})
 
+
 @app.route("/register", methods=["POST"])
 def register():
     data = request.json
@@ -27,4 +28,6 @@ def register():
     TOKENS[token] = pc_id
     return jsonify({"status": "registered"})
 
-app.run(port=5000)
+
+# Важно: для продакшена с Gunicorn НЕ вызываем app.run()
+# Gunicorn сам подхватит объект `app`
